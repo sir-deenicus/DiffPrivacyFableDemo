@@ -1,0 +1,46 @@
+
+let zd = dualCase ("cat", 0.7) "dog" 
+let fd = dualCase ("fish", 0.5) "meat" 
+
+let coin = distb { let! n = uniform [0.1..0.1..0.9]
+                   return n}
+
+Browser.console.log(probabilityOf ((=) 0.5) coin) 
+
+let qq = histogram coin
+
+Browser.console.log(qq)   
+ 
+let fair = [true; false; false; true; true; false; true; false]
+
+let biased = [ false; false; false; false; false; false; true; false]
+
+let tt = fair |> updates (fun c p -> if c then p else 1. - p) (Map.ofArray qq)
+
+Browser.console.log(Map.toArray tt)   
+
+
+let tt2 = biased |> updates (fun c p -> if c then p else 1. - p) (Map.ofArray qq)
+
+Browser.console.log(Map.toArray tt2)   
+
+
+let kq = probabilityOfWeighted ((=) 0.5) tt  
+let kq2 = probabilityOfWeighted ((=) 0.5) tt2  
+
+Browser.console.log(histogramWeighted tt |> Map.toArray)
+Browser.console.log(histogramWeighted tt |> Map.sum)
+
+Browser.console.log(histogramWeighted tt2 |> Map.toArray)
+
+Browser.console.log(kq)   
+Browser.console.log(kq2)   
+ 
+let test = distb { let! c = zd 
+                   let! b = bernoulli 0.1
+                   let! f = fd
+                   if b then return c,f
+                   else let! t = bernoulli 0.5
+                        return ((if t then "cat" else "dog"), f)}
+  
+let z = probabilityOf (fst >> (=) "cat") test , Set.toArray test.Support

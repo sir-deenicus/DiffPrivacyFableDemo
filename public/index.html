@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+  <title>An Introdution to Differential Privacy</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="plotly-latest.min.js"></script>
+  <script src="PlotlyWrapper.js"></script>  
+  <script type='text/javascript' async src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+  <link rel='stylesheet' type='text/css' href='style.css'>
+</head>
+<body> 
+  <h1>An Introdution to Differential Privacy</h1>
+  
+  <p>I've known of the term <em>differential privacy</em> for a long while, but only vaguely. Recently, I decided to look a bit more into the topic and also thought it a good place to start/try out interactive explanations. As it turns out, differential privacy is essentially about probabilities and information, which means an excuse to experiment with interactive explanations of relevant areas from probability theory (and an excuse to play with a discrete probability monad).</p>
+  
+  <aside>If you think this can be further rounded out without much effort please let me know. </aside>
+  
+  <p>Of course, there is a great deal more to the subject of differential privacy than I can cover (or looked into) but I think I am satisfied with this as providing a decent high level overview.</p>
+  
+  <h2>Initial example</h2>
+  
+  <p>One early precursor to DP is the method of randomized response. Proposed by S. L. Warner in 1965 [1], it's a method of confidentially surveying a population.</p>
+  
+  <p>Suppose you were surveying the population about something controversial and wanted to do so in a manner allowing plausible deniability. You could use the following procedure:</p>
+  
+  <p>Flip a coin, if it's heads, the responder must answer truthfully and if it's tails they must answer <em>yes</em>. Note that this leaks some information about the responder: if they answer <em>no</em> then you know that they definitely have not performed said action. If they answer, <em>yes</em>, however, you have no way of distinguishing between whether it was truthful or the result of a coin flip. But across the entire population, since you control the procedure, you can work backwards to get the true distribution.</p>
+  
+  <p>Suppose for example, you were surveying individuals about whether they were pro or against bacon🥓. In the example below, you can <strong>adjust the slider</strong> to see how the surveyed numbers change. Using this procedure, the surveyed number that are <em>against</em> is always ~half the true number in the population.</p>
+  
+  <p>True Proportion of Population that is <em>Against Bacon</em>:</p>
+  
+  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true"> <span name ="rrpercno">20%</span>
+  
+  <div id="rrcorr"></div>
+  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true"> <span name ="rrpercno">20%</span>
+  <p>This is because, for "Pro" answers, all the results are true but only get reached half the time. And for "Anti" answers (the protected class), half the time the answers were truthful and the other half go to "Pro". In the below, assume <em>p</em> is the true proportion that is against bacon. Then:</p>
+  
+  <p><em>p</em> = <span name = "rrp"></span></p>
+  
+  <p><strong>For</strong>: 0.5 + 0.5 * (1 - <span name = "rrp"></span>) = <span id = "rra1"></span></p>
+  
+  <p><strong>Against</strong>: 0.5 * <span name = "rrp"></span>  = <span id = "rra2"></span></p>
+  
+  <aside>0.5 * p = q <br/>q = 2p</aside>
+  With some math, we can work out the true numbers: 
+  
+  <p><strong>True Against</strong>: 2 * (q=<span id = "rrq"></span>) = <span id = "rra3"></span></p>
+  
+  <p>Which you can subtract from 1 to get the Pro proportion. If none of this makes sense, play with the slider and it should start to.</p>
+  
+  <p>Something to note is that if some (ahem, barbaric) human says they are pro bacon, you definitely know they are speaking the truth (the anti's contrevarsial but clearly more appropriate true beliefs is protected). Suppose we wanted to adjust this to be more anonymous?</p>
+  
+  <h2>Differential Privacy</h2>
+  
+  <p>For this example, we'll be surveying people about their favorite sandwich. To keep things simple we'll assume the tallied results were:</p>
+  
+  <table>
+  <thead>
+  <tr class="header">
+  <th><p>Best Sandwich</p></th>
+  <th><p>Share of Favorites</p></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr class="odd">
+  <td><p>Hotdog 🌭</p></td>
+  <td><p>10%</p></td>
+  </tr>
+  <tr class="even">
+  <td><p>Sandwich 🥖</p></td>
+  <td><p>30%</p></td>
+  </tr>
+  <tr class="odd">
+  <td><p>Vegan Hamburger🍔</p></td>
+  <td><p>60%</p></td>
+  </tr>
+  </tbody>
+  </table>  
+  
+  <p>How to tally votes without risking shame or ridicule for your belief that hotdogs are the best sandwich? A simple modification of randomized response allows for this. This time we don't demand a specific answer--if the coin lands heads you speak truthfully but if it lands on tails, you sample uniformly (choose randomly) from among the choices. We can also allow the coin to be loaded or weighted. For example, we can use a coin that comes up heads 1% of the time. As long as we are only interested in population level things, despite the high levels of randomization, we can fully recover the original proportions.</p>
+  
+  <p>With some algebra, I was able to work out that computing the following, for each possible answer recovers the true underlying percentages:
+  <span class="math">\[p_{true} = \frac{p_{survey} - \frac{1}{|C|}(1 - p_{heads})}{p_{heads}}\]</span></p>
+  
+  <p>Where |<em>C</em>| stands for total number of choices in the set <em>C</em> = {choice<sub>1</sub>,..,choice<sub>n</sub>}. This time, the slider will control how biased our coin is.</p>
+  
+  <input type="range" name="points2" id="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
+  
+  <div id="fsurvey"></div> 
+  
+  <p><code>probTrue = (probSurvey - ((1. - headsProb) * (1/numChoices)))/headsProb</code></p>
+  
+  <p>Mutual Information</p>
+  
+  <p>demo</p>
+  
+  <p>demo correlations</p>
+  
+  <p>Leaks
+  <a href="https://en.wikipedia.org/wiki/Randomized_response
+  Gists">https://en.wikipedia.org/wiki/Randomized_response
+  Gists</a></p>
+  <script src="bundle.js"></script>
+</body>
+</html>
