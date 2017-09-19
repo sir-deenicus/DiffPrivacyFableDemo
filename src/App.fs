@@ -22,8 +22,7 @@ let computeRandomizedResponse p =
             let! b = bernoulli 0.5
             if b then return a
             else return "For bacon🥓" }
-
-            
+          
             
 let diffSandwich p = 
     distr { let! a = categorical ["hotdog🌭",0.1;"Sandwich🥖",0.3;"Vegan Hamburger🍔",0.6] 
@@ -47,6 +46,7 @@ let sandwichUpdate q p =
     a3.textContent <- stringr 2 (2. * q)
     rrq.textContent <- stringr 2 q
 
+
 let doUpdate q p =
     let es =  Browser.document.getElementsByName "rrp"  
     for i in 0..int es.length - 1 do es.[i].textContent <- string (round 2 p)
@@ -61,17 +61,20 @@ let doUpdate q p =
     a3.textContent <- stringr 2 (2. * q)
     rrq.textContent <- stringr 2 q
 
+
 let runPlot f divid p =
     let d = f p
     let survey = histogram d |> Array.map (keepLeft ((*) 100.))
+
     let title = Array.map (fun (l,p) -> l + ": " + (string (round 0 p)) + "%") survey |> String.concat " | "
    
     Plotly.barplot ("Survey Results<br>" + title) survey divid 
     survey
 
+
+
 let foodSlilderChanged (src:Browser.HTMLInputElement) =
     let el = Browser.document.getElementsByName "fbias"
-    //let src = e.srcElement :?> Browser.HTMLInputElement
 
     el.[0].textContent <- src.value + "%"
     //el.[1].textContent <- src.value + "%"
@@ -83,9 +86,9 @@ let foodSlilderChanged (src:Browser.HTMLInputElement) =
 
     ignore <| runPlot diffSandwich "fsurvey" (float src.value * 0.01)
 
-let sliderChanged (e:Browser.Event) =
+
+let sliderChanged (src:Browser.HTMLInputElement) =
     let el = Browser.document.getElementsByName "rrpercno"
-    let src = e.srcElement :?> Browser.HTMLInputElement
 
     el.[0].textContent <- src.value + "%"
     el.[1].textContent <- src.value + "%"
@@ -100,15 +103,15 @@ let sliderChanged (e:Browser.Event) =
 
     doUpdate (snd survey.[0] * 0.01) p
 
-let init() =
-  
-    let rrslider = Browser.document.getElementsByName "points"     
-    for i in 0..1 do rrslider.[i].addEventListener("change", asEvent sliderChanged)
+
+let init() =  
+    Browser.window?foodSlilderChanged <- foodSlilderChanged
+    Browser.window?sliderChanged <- sliderChanged
 
     ignore <| runPlot computeRandomizedResponse "rrcorr"  0.2
     ignore <| runPlot diffSandwich "fsurvey"  0.4
 
-    Browser.window?foodSlilderChanged <- foodSlilderChanged
+    doUpdate 0.1 0.2
 
     ()
 

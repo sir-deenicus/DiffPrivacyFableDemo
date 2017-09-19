@@ -30,10 +30,10 @@
   
   <p>True Proportion of Population that is <em>Against Bacon</em>:</p>
   
-  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true"> <span name ="rrpercno">20%</span>
+  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true" onchange="sliderChanged(this)"> <span name ="rrpercno">20%</span>
   
   <div id="rrcorr"></div>
-  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true"> <span name ="rrpercno">20%</span>
+  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true" onchange="sliderChanged(this)"> <span name ="rrpercno">20%</span>
   <p>This is because, for "Pro" answers, all the results are true but only get reached half the time. And for "Anti" answers (the protected class), half the time the answers were truthful and the other half go to "Pro". In the below, assume <em>p</em> is the true proportion that is against bacon. Then:</p>
   
   <p><em>p</em> = <span name = "rrp"></span></p>

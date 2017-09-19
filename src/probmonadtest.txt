@@ -44,3 +44,10 @@ let test = distb { let! c = zd
                         return ((if t then "cat" else "dog"), f)}
   
 let z = probabilityOf (fst >> (=) "cat") test , Set.toArray test.Support
+
+
+//0.75 * x + 0.25 * (1-x) = 0.6
+//0.75x + 0.25 - 0.25x = 0.6
+//0.75x - 0.25x = 0.6-0.25
+//0.5x = 0.6-0.25
+//0.5x = 0.35
