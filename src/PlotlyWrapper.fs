@@ -20,3 +20,7 @@ let barplot (title: string) (points:('a *'b)[]) (divId:string) =
 let colplot (title: string) (data:('a *'b)[]) (divId:string) = 
     let xs, ys = Array.unzip data
     colplotjs divId title xs ys
+
+
+[<Emit("katex.render($0,$1)")>]
+let render_katex e d = jsNative

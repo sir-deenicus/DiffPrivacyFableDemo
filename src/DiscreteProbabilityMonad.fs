@@ -2,6 +2,9 @@ module Discrete.ProbabilityMonad
 
 let rnd = System.Random()                
 
+//from Expert F# code by Don Syme
+//with my helpers to make the code more easily express bayesian formalisms
+
 module Map  =
        let sum m = Map.fold (fun sum _ x -> sum + x) 0. m
 
@@ -57,7 +60,7 @@ let countedCases inp =
     let total = Seq.sumBy (fun (_,v) -> v) inp
     weightedCases (inp |> List.map (fun (x,v) -> (x, float v / float total)))
 
-
+/////////Helpers
 let dualCase ((_,p) as o1) o2 = weightedCases [o1; o2 , 1. - p]
 
 let bernoulli p = dualCase (true, p) false
@@ -74,7 +77,7 @@ let conditionalProb eventx condition  (t:Distribution<'a>) =
    let n = t.Expectation(fun c -> if eventx c && condition c then 1. else  0.)  
 
    let z = t.Expectation(fun c -> if condition c then 1. else  0.) 
-   n / z, n , z
+   n / z
 
 
 let probabilityOf eventx (t:Distribution<'a>) =

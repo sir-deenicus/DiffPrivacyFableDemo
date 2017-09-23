@@ -7,6 +7,8 @@
   <script src="plotly-latest.min.js"></script>
   <script src="PlotlyWrapper.js"></script>  
   <script type='text/javascript' async src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css" integrity="sha384-B41nY7vEWuDrE9Mr+J2nBL0Liu+nl/rBXTdpQal730oTHdlrlXHzYMOhDU60cwde" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.js" integrity="sha384-L9gv4ooDLrYwW0QCM6zY3EKSSPrsuUncpx26+erN0pJX4wv1B1FzVW1SvpcJPx/8" crossorigin="anonymous"></script>
   <link rel='stylesheet' type='text/css' href='style.css'>
 </head>
 <body> 
@@ -24,36 +26,40 @@
   
   <p>Suppose you were surveying the population about something controversial and wanted to do so in a manner allowing plausible deniability. You could use the following procedure:</p>
   
-  <p>Flip a coin, if it's heads, the responder must answer truthfully and if it's tails they must answer <em>yes</em>. Note that this leaks some information about the responder: if they answer <em>no</em> then you know that they definitely have not performed said action. If they answer, <em>yes</em>, however, you have no way of distinguishing between whether it was truthful or the result of a coin flip. But across the entire population, since you control the procedure, you can work backwards to get the true distribution.</p>
+  <p>Flip a coin, if it's heads, the responder must answer truthfully and if it's tails they must answer <em>yes</em>. Note that this leaks some information about the responder: if they answer <em>no</em> then you know that they definitely have not performed said action. If they answer, <em>yes</em>, however, you have no way (at that instance in time) of distinguishing between whether it was truthful or the result of a coin flip. But across the entire population, since you control the procedure, you can work backwards to get the true distribution.</p>
   
-  <p>Suppose for example, you were surveying individuals about whether they were pro or against bacon🥓. In the example below, you can <strong>adjust the slider</strong> to see how the surveyed numbers change. Using this procedure, the surveyed number that are <em>against</em> is always ~half the true number in the population.</p>
+  <p>Suppose for example, you were surveying individuals about whether they love or hate bacon🥓. They flip a coin and if it's heads they answer truthfully. If it's tails, they must say they <em>Hate Bacon</em>. Using this procedure, the surveyed number of those that love bacon is always ~half the true number in the population. This is because, for bacon loving responses, all the results are true but only get reached half the time. And for <em>bacon hating</em> answers (the protected class), half the time, the answers were truthful while the other half were <em>I love bacon answers</em> converted to <em>I hate the consumption of bacon</em> answers.</p>
   
-  <p>True Proportion of Population that is <em>Against Bacon</em>:</p>
+  <p>In the example below, you can <strong>adjust the slider</strong> to see how the surveyed numbers change.</p>
+  
+  <p>True Proportion of Population that <em>Hates Bacon</em>:</p>
   
   <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true" onchange="sliderChanged(this)"> <span name ="rrpercno">20%</span>
   
   <div id="rrcorr"></div>
-  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true" onchange="sliderChanged(this)"> <span name ="rrpercno">20%</span>
-  <p>This is because, for "Pro" answers, all the results are true but only get reached half the time. And for "Anti" answers (the protected class), half the time the answers were truthful and the other half go to "Pro". In the below, assume <em>p</em> is the true proportion that is against bacon. Then:</p>
-  
+  <p>In the below, assume <em>p</em> is the true proportion that hates bacon. Then:</p>
+  <input type="range" name="points" id="points" value="20" min="0" max="100" data-show-value="true" onchange="sliderChanged(this)"> <i>p = </i> <span name ="rrpercno">20%</span>
+
   <p><em>p</em> = <span name = "rrp"></span></p>
   
-  <p><strong>For</strong>: 0.5 + 0.5 * (1 - <span name = "rrp"></span>) = <span id = "rra1"></span></p>
+  <p><strong>Like Bacon</strong>: 0.5 * (1 - <span name = "rrp"></span>) = <span id = "rra1"></span></p>
   
-  <p><strong>Against</strong>: 0.5 * <span name = "rrp"></span>  = <span id = "rra2"></span></p>
+  <p><strong>Hate Bacon</strong>: 0.5 + 0.5 * <span name = "rrp"></span>  = <span id = "rra2"></span></p>
   
-  <aside>0.5 * p = q <br/>q = 2p</aside>
+  <aside>0.5 + 0.5 * p = q <br/>0.5 * p = q - 0.5<br/>p = 2×(q-0.5)</aside>
   With some math, we can work out the true numbers: 
   
-  <p><strong>True Against</strong>: 2 * (q=<span id = "rrq"></span>) = <span id = "rra3"></span></p>
+  <p><strong>True Against</strong>: 2 * ((q=<span id = "rrq"></span>) - 0.5) = <span id = "rra3"></span></p>
   
-  <p>Which you can subtract from 1 to get the Pro proportion. If none of this makes sense, play with the slider and it should start to.</p>
+  <p>Which you can subtract from 1 to get the proportion that enjoys bacon. If none of this makes sense, play with the slider and it should start to.</p>
   
-  <p>Something to note is that if some (ahem, barbaric) human says they are pro bacon, you definitely know they are speaking the truth (the anti's contrevarsial but clearly more appropriate true beliefs is protected). Suppose we wanted to adjust this to be more anonymous?</p>
+  <p>Something to note is that if some (ahem, barbaric) human says they love bacon, you definitely know they are speaking the truth (the <em>End Bacon Now</em> contrevarsial but clearly more appropriate true belief is protected). Suppose we wanted to adjust this to be more anonymous?</p>
   
   <h2>Differential Privacy</h2>
   
-  <p>For this example, we'll be surveying people about their favorite sandwich. To keep things simple we'll assume the tallied results were:</p>
+  <p>Differential Privacy was initially expanded upon and given a solid mathematical footing by the prolific computer scientist/cryptographer Cynthia Dwork. It is a large field so we'll only be taking a broad overview of it.</p>
+  
+  <p>In the example for this section, we'll be surveying people about their favorite sandwich. To keep things simple we'll assume the true preferences of sandwiches are:</p>
   
   <table>
   <thead>
@@ -85,19 +91,63 @@
   
   <p>Where |<em>C</em>| stands for total number of choices in the set <em>C</em> = {choice<sub>1</sub>,..,choice<sub>n</sub>}. This time, the slider will control how biased our coin is.</p>
   
-  <input type="range" name="points2" id="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
+  <input type="range" name="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
   
   <div id="fsurvey"></div> 
+  <input type="range" name="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
   
   <p><code>probTrue = (probSurvey - ((1. - headsProb) * (1/numChoices)))/headsProb</code></p>
+  <span name ="coinS" id = "Sandwich🥖"></span> - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+  <br/>
+  <span name ="coinS" id = "Vegan Hamburger🍔"></span> - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+  <br/>
+  <span id = "math3"></span>
+  <span name ="coinS" id = "hotdog🌭"></span>  - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+ 
+  <h2>Leaks</h2>
   
-  <p>Mutual Information</p>
+  <p>Differential Privacy is not an imprenetrable seal of protection; it is possible to introduce leaks. Two ways that I could think of are attacks involving remembering queries and by asking multiple correlated questions.</p>
   
-  <p>demo</p>
+  <p>If the queries do not retain any data on what each individual response was, privacy remains protected. If instead the responses were recorded, the collector can revisit the data to make new inferences. For example, after the population estimates of the proportions have been worked out, one can condition to just those who said against and work out the probability that those who said against truly are against.</p>
   
-  <p>demo correlations</p>
+  <p>In our randomized response scenario, if the proportion of the population that is against is 41%, the probability that those who answered against truly are against is ~59%. With the second differential privacy method, if it were 36% against at the population level, then those responding against are truly against with a 63% chance. This is a large change in probability! However, if a biased coin was instead used, say one that turns up tails 95% of the time, the worst case scenario would only involve going from 49% to 51%. The population level true values are still as precise but the individuals are much more protected.</p>
   
-  <p>Leaks
+  <p>The amount of information leaked depends on the underlying population probability and increases from zero and then decreases. Here's a graph for the randomized response scenario:<img src="Images/leak.png" alt="alt text" /></p>
+  
+  <p>As you can see, if the purpose is to secure the privacy of individual responses, then retaining the data of responses is subideal, especially when 30%-60% of the populace is against. If the results are to be retained, we can at least demand a high bias or a low probability of requiring a truthful response (most differential privacy work is biased towards the concerns of the data collector so they might not agree with my suggestion).</p>
+  
+  <p>Another manner where which the implementor can cheat is by retaining responses and querying with either the same or a very similar set of questions. If the survey giver keeps asking the same questions, they can get ever more confident as the true value of the responses. But that is not the only way to act in bad faith. If the survey processes constructs questions whose responses are correlated, they can become fairly certain about true answers by even just the second query (or the first if enough different questions are asked).</p>
+  
+  <h3>Correlated Queries</h3>
+  
+  <p>In our final scenario, we will visit a world of dogs, mice and cats ruled by fat cats. The Fat Cats are performing what is ostensibly a demographic survey. To respect the right to anonymity of the denizens, they tell everyone they're implementing differential privacy. Those few probing questions? To provide better services, they say.</p>
+  
+  <p>We will take the perspective of a single animal being queried. There is a predictor, a bayesian, that doesn't get to see our selected species. We simulate it asking questions each time the button is pressed (you can also think of it as different phrasings each time). Directly below (for comparison) we will also simulate our change in predicted species from asking the <em>same single</em> question of <em>are you a dog or cat or mouse?</em> a number of times equal to button presses.</p>
+  
+  <p>Click the <em>query</em> button to see how our bayesian changes its confidence in its predictions.</p>
+  
+  <p><strong>Select your species</strong>:
+  <select id = "species">
+    <option value="cat">cat🐈</option>
+    <option value="saab">dog🐶</option>
+    <option value="mercedes">mouse🐭</option>
+  </select></p>
+  
+  <p><strong>Relationship between questions:</strong></p>
+  
+  <p><input type="radio" id="corropt1" name="corropt" value="correlated" checked>
+  <label for="corropt1">Correlated</label> | <input type="radio" id="corropt2" name="corropt" value="independent">
+  <label for="corropt2">Independent</label></p>
+  
+  <p>Times asked: <span id ="nqueries">1</span>
+  <input type="button" id="askq" value="Query"></p>
+  
+  <h2>Technical Appendix</h2>
+  
+  <h3>The Likelihood for our Bayesian</h3>
+  
+  <h3>Mutual Information</h3>
+  
   <a href="https://en.wikipedia.org/wiki/Randomized_response
   Gists">https://en.wikipedia.org/wiki/Randomized_response
   Gists</a></p>
