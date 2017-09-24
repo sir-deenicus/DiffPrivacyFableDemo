@@ -1,12 +1,11 @@
 module Discrete.ProbabilityMonad
 
+open Commons
+
 let rnd = System.Random()                
 
 //from Expert F# code by Don Syme
-//with my helpers to make the code more easily express bayesian formalisms
-
-module Map  =
-       let sum m = Map.fold (fun sum _ x -> sum + x) 0. m
+//added some helpers to make the code more easily express bayesian formalisms
 
 type Distribution<'T when 'T : comparison> =
     abstract Sample : 'T
@@ -96,11 +95,29 @@ let probabilityOfWeighted eventx (weights:Map<_,_>)  =
     let z = Map.sum weights  
     n / z
 
-let histogramWeighted (weights:Map<_,_>)  =    
+let pmfWeighted (weights:Map<_,_>)  =    
     let t = Map.sum weights  
     Map.map (fun _ p -> p/t) weights 
 
-let histogram (distr:Distribution<_>) = 
-    distr.Support 
+let pmf (dist:Distribution<_>) = 
+    dist.Support 
     |> Set.toArray 
-    |> Array.map (fun c -> c, probabilityOf ((=) c) distr)  
+    |> Array.map (fun c -> c, probabilityOf ((=) c) dist)  
+
+
+let inline log' x = if x = 0. then 0. else log x
+
+let inline entropy dist = -Seq.sumBy (fun (_,p) -> p * log' p) dist
+
+let entropyDistr d = entropy (pmf d)
+
+let inline condition  f d = Array.filter (fst >> snd >> f) d |> Array.normalizeWeights
+
+let inline condition2 f d = Array.filter (fst >> fst >> f) d |> Array.normalizeWeights
+
+let inline conditionalEntropy y d  = d |> condition ((=) y) |> entropy
+
+let inline conditionalEntropy2 y d = d |> condition2 ((=) y) |> entropy
+
+
+

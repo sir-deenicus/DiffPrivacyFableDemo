@@ -7,9 +7,9 @@
   <script src="plotly-latest.min.js"></script>
   <script src="PlotlyWrapper.js"></script>  
   <script type='text/javascript' async src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css" integrity="sha384-B41nY7vEWuDrE9Mr+J2nBL0Liu+nl/rBXTdpQal730oTHdlrlXHzYMOhDU60cwde" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.js" integrity="sha384-L9gv4ooDLrYwW0QCM6zY3EKSSPrsuUncpx26+erN0pJX4wv1B1FzVW1SvpcJPx/8" crossorigin="anonymous"></script>
   <link rel='stylesheet' type='text/css' href='style.css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css" integrity="sha384-B41nY7vEWuDrE9Mr+J2nBL0Liu+nl/rBXTdpQal730oTHdlrlXHzYMOhDU60cwde" crossorigin="anonymous">
 </head>
 <body> 
   <h1>An Introdution to Differential Privacy</h1>
@@ -88,21 +88,20 @@
   
   <p>With some algebra, I was able to work out that computing the following, for each possible answer recovers the true underlying percentages:
   <span class="math">\[p_{true} = \frac{p_{survey} - \frac{1}{|C|}(1 - p_{heads})}{p_{heads}}\]</span></p>
-  
+    
   <p>Where |<em>C</em>| stands for total number of choices in the set <em>C</em> = {choice<sub>1</sub>,..,choice<sub>n</sub>}. This time, the slider will control how biased our coin is.</p>
-  
+  <p><strong>Coin Bias: </strong>
   <input type="range" name="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
-  
+  </p>
   <div id="fsurvey"></div> 
+  <p><strong>Coin Bias: </strong>
   <input type="range" name="points2" value="40" min="0" max="100" data-show-value="true"  onchange="foodSlilderChanged(this)"> <span name ="fbias">40%</span>
-  
-  <p><code>probTrue = (probSurvey - ((1. - headsProb) * (1/numChoices)))/headsProb</code></p>
-  <span name ="coinS" id = "Sandwich🥖"></span> - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+  </p>
+  <span name ="coinS" id = "Sandwich🥖"></span>
   <br/>
-  <span name ="coinS" id = "Vegan Hamburger🍔"></span> - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+  <span name ="coinS" id = "Vegan Hamburger🍔"></span>
   <br/>
-  <span id = "math3"></span>
-  <span name ="coinS" id = "hotdog🌭"></span>  - ((1. - <span name = "coinb"></span>) * (1/3)))/<span name ="coinb"></span>
+  <span name ="coinS" id = "hotdog🌭"></span>
  
   <h2>Leaks</h2>
   
@@ -127,10 +126,10 @@
   <p>Click the <em>query</em> button to see how our bayesian changes its confidence in its predictions.</p>
   
   <p><strong>Select your species</strong>:
-  <select id = "species">
+  <select id = "species" onchange="resetGuesses()">
     <option value="cat">cat🐈</option>
-    <option value="saab">dog🐶</option>
-    <option value="mercedes">mouse🐭</option>
+    <option value="dog">dog🐶</option>
+    <option value="mouse">mouse🐭</option>
   </select></p>
   
   <p><strong>Relationship between questions:</strong></p>
@@ -140,7 +139,8 @@
   <label for="corropt2">Independent</label></p>
   
   <p>Times asked: <span id ="nqueries">1</span>
-  <input type="button" id="askq" value="Query"></p>
+    <input type="button" id="askq" value="Query"  onclick="updateGuesses()"> | <input type="button" id="qreset" value="Reset" onclick="resetGuesses()"></p>
+  <div id ="guesserInf"></div>
   
   <h2>Technical Appendix</h2>
   

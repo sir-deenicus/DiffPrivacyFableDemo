@@ -3,6 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>    
+    <Compile Include="Commons.fs" />
     <Compile Include="PlotlyWrapper.fs" />
     <Compile Include="DiscreteProbabilityMonad.fs" />
     <Compile Include="App.fs" />

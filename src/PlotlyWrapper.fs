@@ -22,5 +22,5 @@ let colplot (title: string) (data:('a *'b)[]) (divId:string) =
     colplotjs divId title xs ys
 
 
-[<Emit("katex.render($0,$1)")>]
+[<Emit("katex.render($0,$1,{displayMode: true})")>]
 let render_katex e d = jsNative
