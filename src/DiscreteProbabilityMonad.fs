@@ -105,19 +105,27 @@ let pmf (dist:Distribution<_>) =
     |> Array.map (fun c -> c, probabilityOf ((=) c) dist)  
 
 
+let histogram len (d:_[]) =
+    let _, maxp = Array.maxBy snd d
+    Array.map (fun (x,p:float)-> 
+          [|sprintf "%A" x ;
+            stringr100 2 p + "%"; 
+            String.replicate (int(round 0 (p/maxp * len))) "#" |]) d
+    |> makeTable "\n" [|"item";"p"; ""|] ""  
+
+/////////////
+    
+
 let inline log' x = if x = 0. then 0. else log x
 
 let inline entropy dist = -Seq.sumBy (fun (_,p) -> p * log' p) dist
 
 let entropyDistr d = entropy (pmf d)
 
-let inline condition  f d = Array.filter (fst >> snd >> f) d |> Array.normalizeWeights
+let inline conditionWith projectWith f d = Array.filter (fst >> projectWith >> f) d |> Array.normalizeWeights
 
-let inline condition2 f d = Array.filter (fst >> fst >> f) d |> Array.normalizeWeights
+let inline conditionalEntropyWith projectWith x d = conditionWith projectWith ((=) x) d |> entropy
 
-let inline conditionalEntropy y d  = d |> condition ((=) y) |> entropy
-
-let inline conditionalEntropy2 y d = d |> condition2 ((=) y) |> entropy
 
 
 
