@@ -51,7 +51,7 @@ let runPlot f divid p =
 
     let title = Array.map (fun (l,p) -> l + ": " + (string (round 0 p)) + "%") survey |> String.concat " | "
    
-    Plotly.barplot ("Survey Results<br>" + title) survey divid 
+    Plotly.barplot ("Survey Results<br>" + title) divid survey  
     survey
 
 
@@ -66,7 +66,7 @@ let updateEquations b (hist:Map<_,_>) =
            Plotly.render_katex equation e) coinS
 
 
-let foodSlilderChanged (src:Browser.HTMLInputElement) =
+let foodSliderChanged (src:Browser.HTMLInputElement) =
     let el = Browser.document.getElementsByName "fbias"
 
     foreachNodeList (fun e -> e.textContent <- src.value + "%") el
@@ -221,8 +221,31 @@ let updateGuesses () =
     updateText()
 //////////////////////////
 
+let mutualInfo () =
+    let population = categorical ["cat",0.5; "dog",0.4; "mouse",0.1]
+    
+    let joint = distr {
+        let! animal = population
+        let! toy = favtoy animal
+        return (animal,toy) 
+    }
+
+    let p = pmf joint
+    let ce = conditionalEntropy snd joint
+    
+    let mi2 = mutualInformation joint
+    let mi = entropyDistr population - ce
+
+    let txt = sprintf "<b>Mutual information using conditional Entropy</b>: %s bits<br/><br/><b>Mutual information Directly</b>: %s bits" (stringr 2 mi) (stringr 2 mi2)
+
+    let div = Browser.document.getElementById("entinf") :?> Browser.HTMLDivElement
+    div.innerHTML <- txt
+
+    Array.map (fun ((a,b),p) -> a + "," + b,p) p 
+    |> Plotly.barplot "Joint Distribution of Animals v Toys" "jointchart"
+
 let init() =  
-    Browser.window?foodSlilderChanged <- foodSlilderChanged
+    Browser.window?foodSliderChanged <- foodSliderChanged
     Browser.window?sliderChanged <- sliderChanged
     Browser.window?updateGuesses <- updateGuesses
     Browser.window?resetGuesses <- resetGuesses
@@ -233,5 +256,6 @@ let init() =
     doUpdate 0.6 0.2
 
     updateText()
+    mutualInfo()
 
 init()

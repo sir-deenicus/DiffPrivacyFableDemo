@@ -12,12 +12,12 @@ let barplotjs (divId:string) (title: string) (xs:'a[]) (ys:'b[]) = jsNative
 let colplotjs (divId:string) (title: string) (xs:'a[]) (ys:'b[]) = jsNative
 
 
-let barplot (title: string) (points:('a *'b)[]) (divId:string) = 
+let barplot (title: string) (divId:string) (points:('a *'b)[]) = 
     let xs, ys = Array.unzip points
     barplotjs divId title xs ys 
 
 
-let colplot (title: string) (data:('a *'b)[]) (divId:string) = 
+let colplot (title: string) (divId:string) (data:('a *'b)[]) = 
     let xs, ys = Array.unzip data
     colplotjs divId title xs ys
 

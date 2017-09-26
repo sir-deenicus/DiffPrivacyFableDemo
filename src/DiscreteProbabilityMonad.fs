@@ -95,6 +95,11 @@ let probabilityOfWeighted eventx (weights:Map<_,_>)  =
     let z = Map.sum weights  
     n / z
 
+let probabilityOfWeighted2 eventx (weights:('a * float)[])  =
+    let n = Array.filter (fun (k, _) -> eventx k) weights |> Array.sumBy snd
+    let z = Array.sumBy snd weights  
+    n / z
+
 let pmfWeighted (weights:Map<_,_>)  =    
     let t = Map.sum weights  
     Map.map (fun _ p -> p/t) weights 
@@ -115,17 +120,42 @@ let histogram len (d:_[]) =
 
 /////////////
     
+let toBits x = x / log 2. 
 
-let inline log' x = if x = 0. then 0. else log x
+let inline log0 x = if x = 0. then 0. else log x
 
-let inline entropy dist = -Seq.sumBy (fun (_,p) -> p * log' p) dist
+let inline entropy dist = -Seq.sumBy (fun (_,p) -> p * log0 p) dist
 
 let entropyDistr d = entropy (pmf d)
 
 let inline conditionWith projectWith f d = Array.filter (fst >> projectWith >> f) d |> Array.normalizeWeights
 
-let inline conditionalEntropyWith projectWith x d = conditionWith projectWith ((=) x) d |> entropy
+let inline conditionEntropyOn projectWith x d = conditionWith projectWith ((=) x) d |> entropy
 
 
+let conditionalEntropy projectWith (joint:Distribution<_>) =
+    Set.map projectWith joint.Support 
+    |> Seq.sumBy (fun x -> 
+          let p = probabilityOf (projectWith >> (=) x) joint
+          let h = conditionEntropyOn projectWith x (pmf joint)
+          p * h)
+
+let mutualInformation (joint:Distribution<_>) =
+    joint.Support |> Seq.sumBy (fun(x,y) ->
+        let px = probabilityOf (fst >> (=) x) joint
+        let py = probabilityOf (snd >> (=) y) joint 
+        let pxy = probabilityOf ((=) (x,y)) joint
+        pxy * log0(pxy/(px * py)))
 
 
+let kldivergence (pA:Distribution<_>) (pB:Distribution<_>) =
+    pA.Support |> Seq.sumBy (fun x ->
+        let p_a = probabilityOf ((=) x) pA
+        let p_b = probabilityOf ((=) x) pB
+        p_a * log0(p_a/ p_b))
+
+let kldivergence2 pA pB =
+    pA |> Array.sumBy (fun ((x,_)) ->
+        let p_a = probabilityOfWeighted2 ((=) x) pA
+        let p_b = probabilityOfWeighted2 ((=) x) pB
+        p_a * log0(p_a/ p_b))
