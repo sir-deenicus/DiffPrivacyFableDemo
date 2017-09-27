@@ -177,9 +177,9 @@
   
   <p>Entropy is roughly, our uncertainty about possible outcomes. We want this concept to be low when the bulk of probability is concentrated on a few outcomes and high when it's diffuse. For a binary proposition, this is a function that's low for low probability and high probability events (i.e. 1% means we are very certain this thing will not happen). Additionally, we want this uncertainty to change smoothly with changes in probability and to not depend on the order in which the probabilities are presented. Finally and most importantly, is the notion of coarse graining or throwing away detail (going from <em>a shiny green toy car</em> to <em>a toy car</em>).</p>
   
-  <p>If we have that the entropy at the full level of detail is equal to that of our coarse grained level minus the branching distinctions we don't care about, there is essentially only one form entropy can take. That is, the entropy of our coarse graining should be less than or equal to that of the fine grained level. It is less exhausting to communicate at a high level than to finely go over pedantic distinctions (programming can be tedious).</p>
+  <p>If we have that the entropy at the coarse grained level is equal to that of our full level of detail minus the branching distinctions we don't care about, there is essentially only one form entropy can take. That is, the entropy of our coarse graining should be less than or equal to that of the fine grained level. It is less exhausting to communicate at a high level than to finely go over pedantic distinctions (programming can be tedious).</p>
   
-  <p>If we have a set <em>{a,b,c}</em>, sets <em>A = {a,b}, B = {c}</em> and we want a function <em>H:Distribution -> Real</em> such that H({A,B}) = H({A,B}) + (p<sub>A</sub>H({A}) + p<sub>B</sub>H({B})), the function which solves this is (for discrete systems): -Σ<sub>x</sub>(p(x) * log p(x)). In code:</p>
+  <p>If we have a set <em>{a,b,c}</em>, sets <em>A = {a,b}, B = {c}</em> and we want a function <em>H:Distribution -> Real</em> such that H({a,b,c}) = H({A,B}) + (p<sub>A</sub>H({A}={a,b}) + p<sub>B</sub>H({B} = {c})), the function which solves this is (for discrete systems): -Σ<sub>x</sub>(p(x) * log p(x)). In code:</p>
   
   <pre><code>let entropy dist = -Seq.sumBy (fun (_,p) -&gt; p * log p) dist
   </code></pre>
