@@ -233,13 +233,13 @@ entropyDistr states = entropyDistr coarse + 0.8 * entropy (statesA) + 0.2 * entr
   <pre><code>mutualInformation = entropyDistr X - (conditionalEntropy snd joint)
   </code></pre>
   
-  <p>An explicit example always helps. We define the below joint distribution based on the animal example above and it visualize its joint distribution:</p>
+  <p>An explicit example always helps. We define the below joint distribution based on the animal example above and visualize its joint distribution:</p>
   
   <pre><code>let population = categorical ["cat",0.5; "dog",0.4; "mouse",0.1]
   let joint = distr {
       let! animal = population
       let! toy = favtoy animal
-      return (a,toy) 
+      return (animal,toy) 
   }
 let ce = conditionalEntropy snd joint
 let mi = mutualInformation joint    
